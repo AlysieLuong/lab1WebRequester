@@ -1,8 +1,46 @@
-import React from "react";
-import { Button, StyleSheet, TextInput, View } from "react-native";
+import React, { useState } from "react";
+import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function HomeScreen() {
-  const [text, onChangeText] = React.useState("Enter URL");
+  const [text, onChangeText] = React.useState(
+    "https://reactnative.dev/movies.json",
+  );
+
+  const [webData, setwebData] = useState(""); //states and react hooks
+  const request = new XMLHttpRequest();
+
+  function _handlePressButtonAsync() {
+    request.onreadystatechange = (e) => {
+      if (request.readystate! == 4) {
+        return;
+      }
+      if (request.status === 200) {
+        console.log("success", +request.responseText);
+        setwebData(
+          "Status: " +
+            request.status +
+            " " +
+            request.statusText +
+            " " +
+            request.responseText +
+            " " +
+            request.response,
+        );
+      } else {
+        console.warn("error");
+        setwebData(
+          "Error: " +
+            request.status +
+            " " +
+            request.statusText +
+            " " +
+            request.responseText,
+        );
+      }
+    };
+    request.open("GET", text);
+    request.send();
+  }
 
   return (
     <View style={styles.containerColumn}>
@@ -13,11 +51,9 @@ export default function HomeScreen() {
           value={text}
         />
 
-        <Button
-          title="Click Me"
-          onPress={() => alert("Stop pressing my button!" + text)}
-        />
+        <Button title="Go Request" onPress={() => _handlePressButtonAsync()} />
       </View>
+      <Text> {webData}</Text>
     </View>
   );
 }
